@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Alata&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -8,8 +9,17 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-josefin-sans);
+  --font-heading: var(--font-alata);
+  --font-alt: var(--font-montserrat);
+
+  /* 70s Warm palette */
+  --color-retro-purple: #722880;
+  --color-retro-coral: #d72d51;
+  --color-retro-orange: #eb5c18;
+  --color-retro-gold: #deb600;
+  --color-retro-cream: #f5e6d3;
+  --color-retro-brown: #6b4423;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +32,35 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+}
+@layer components {
+  header {
+    /* Win2000-style gray menu bar with sunken separator at bottom */
+    background: linear-gradient(180deg, #e8e8e4 0%, #d4d0c8 100%);
+    border-bottom: 1px solid #808080;
+    box-shadow: 0 1px 0 #ffffff;
+
+    nav {
+      @apply flex flex-row justify-between items-center mx-auto container px-2 py-0.5;
+    }
+
+    ul {
+      @apply flex flex-row gap-0 items-center;
+    }
+  }
+
+  .nav-link {
+    /* Win2000 menu item — flat blue highlight on hover, white text */
+    @apply flex flex-row gap-2 items-center font-heading text-gray-800 px-4 py-1 text-sm transition-colors duration-75;
+
+    &:hover {
+      background: #0054e3;
+      color: #ffffff;
+    }
+  }
+
+  .button {
+    @apply bg-gradient-to-b from-gray-100 to-gray-300 hover:from-gray-200 hover:to-gray-400 border-2 border-t-white border-l-white border-r-gray-600 border-b-gray-600 px-6 py-1.5 text-sm font-alt font-semibold text-gray-800 shadow-sm active:border-t-gray-600 active:border-l-gray-600 active:border-r-white active:border-b-white;
+  }
 }
