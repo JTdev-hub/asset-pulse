@@ -3,18 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/app/lib/supabase/client";
+import { signInWithEmail } from "@/app/lib/actions/auth";
 import Win2000Window from "@/app/components/Win2000Window";
 import Win2000Input from "@/app/components/Win2000Input";
 import Win2000Taskbar from "@/app/components/Win2000Taskbar";
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 export default function LoginPage() {
-  const router = useRouter();
-  // createClient() is called once at component level, not inside the handler,
-  // so the same client instance is reused across renders.
   const supabase = createClient();
 
   const [email, setEmail] = useState("");
@@ -22,38 +17,26 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function signInWithEmail() {
-    // Reset error before each attempt
+  async function handleSignInWithEmail() {
     setError(null);
-
-    // Client-side validations — catch obvious mistakes before hitting Supabase
-    if (!email) {
-      setError("Email is required.");
-      return;
-    }
-    if (!EMAIL_REGEX.test(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    if (!password) {
-      setError("Password is required.");
-      return;
-    }
-
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const result = await signInWithEmail(email, password);
     setLoading(false);
 
-    if (error) {
-      setError(error.message);
-      return;
+    // signInWithEmail redirects on success, so result only exists on error
+    if (result?.error) {
+      setError(result.error);
     }
+  }
 
-    // On success, redirect to the protected area
-    router.push("/");
+  async function handleSignInWithGoogle() {
+    // OAuth must stay client-side — it needs window.location for the redirect URL
+    await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
   }
 
   return (
@@ -162,7 +145,7 @@ export default function LoginPage() {
             {/* Action buttons */}
             <div className="flex justify-end gap-2 mb-4">
               <button
-                onClick={signInWithEmail}
+                onClick={handleSignInWithEmail}
                 disabled={loading}
                 className="button px-5 py-1 text-xs disabled:opacity-50"
               >
@@ -186,7 +169,10 @@ export default function LoginPage() {
               <p className="text-center text-xs font-alt text-gray-500 mb-2">
                 or sign in with
               </p>
-              <button className="button w-full flex items-center gap-2 justify-center px-3 py-1.5 text-xs">
+              <button
+                className="button w-full flex items-center gap-2 justify-center px-3 py-1.5 text-xs"
+                onClick={handleSignInWithGoogle}
+              >
                 <Image src="/google.png" alt="Google" width={14} height={14} />
                 Continue with Google
               </button>

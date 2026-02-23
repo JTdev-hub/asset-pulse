@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { createClient } from "@/app/lib/supabase/client";
+import { signUpWithEmail } from "@/app/lib/actions/auth";
 import Win2000Window from "@/app/components/Win2000Window";
 import Win2000Input from "@/app/components/Win2000Input";
 import Win2000Taskbar from "@/app/components/Win2000Taskbar";
@@ -18,18 +18,18 @@ export default function SignUpPage() {
   async function handleSignUp() {
     setError(null);
 
+    // Client-side check before hitting the server
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
 
     setLoading(true);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signUp({ email, password });
+    const result = await signUpWithEmail(email, password);
     setLoading(false);
 
-    if (error) {
-      setError(error.message);
+    if ("error" in result) {
+      setError(result.error);
       return;
     }
 
