@@ -80,6 +80,19 @@ Reusable components in `app/components/`:
 
 The UI uses a retro Windows 2000 aesthetic. Custom theme colors and CSS component classes (`.button`, `.nav-link`) are defined in `app/globals.css` using Tailwind's `@theme` directive. Key design tokens: retro-purple, coral, orange, gold, cream, brown, plus Win2000 dialog grays and blue title bar gradients.
 
+### Constants
+
+**All constants must live in `app/lib/constants/` as separate files per domain.** Never declare constants inline inside pages or components.
+
+| File | Contents |
+|---|---|
+| `app/lib/constants/currencies.ts` | `CURRENCIES` array + `CurrencyCode` type |
+
+**Rules:**
+- Use `as const` on arrays so TypeScript infers literal types
+- Export a derived type (e.g. `CurrencyCode`) alongside each constant array
+- Import constants with `@/app/lib/constants/<file>`
+
 ### Path Aliases
 
 `@/*` maps to project root (e.g., `import { prisma } from '@/app/lib/prisma'`).

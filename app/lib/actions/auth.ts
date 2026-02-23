@@ -29,7 +29,7 @@ export async function signInWithEmail(
 export async function signUpWithEmail(
   email: string,
   password: string
-): Promise<{ error: string } | { success: true }> {
+): Promise<{ error: string } | void> {
   if (!email || !EMAIL_REGEX.test(email)) {
     return { error: "Please enter a valid email address." };
   }
@@ -47,7 +47,7 @@ export async function signUpWithEmail(
     return { error: error.message };
   }
 
-  return { success: true };
+  redirect("/auth/preferred-currency");
 }
 
 export async function signOut(): Promise<void> {

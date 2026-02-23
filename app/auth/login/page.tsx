@@ -40,13 +40,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div
-      className="flex flex-col min-h-screen"
-      style={{
-        background:
-          "linear-gradient(180deg, #1B5FA8 0%, #2E78C5 35%, #1E60A8 65%, #164E96 100%)",
-      }}
-    >
+    <div className="auth-bg">
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-100">
           <Win2000Window
@@ -92,22 +86,12 @@ export default function LoginPage() {
             </div>
 
             {/* Error message */}
-            {error && (
-              <div
-                className="mb-3 px-3 py-2 text-xs font-alt text-red-800"
-                style={{
-                  background: "#FFF0F0",
-                  border: "1px solid #CC0000",
-                }}
-              >
-                {error}
-              </div>
-            )}
+            {error && <div className="win-error">{error}</div>}
 
             {/* Form */}
             <div className="space-y-2.5 mb-3">
               <div className="flex items-center gap-2">
-                <label className="text-xs font-alt font-semibold text-gray-800 w-24 text-right shrink-0">
+                <label className="win-form-label w-24">
                   Email:
                 </label>
                 <Win2000Input
@@ -117,7 +101,7 @@ export default function LoginPage() {
                 />
               </div>
               <div className="flex items-center gap-2">
-                <label className="text-xs font-alt font-semibold text-gray-800 w-24 text-right shrink-0">
+                <label className="win-form-label w-24">
                   Password:
                 </label>
                 <Win2000Input
@@ -156,13 +140,7 @@ export default function LoginPage() {
             </div>
 
             {/* HR separator */}
-            <div
-              className="mb-3"
-              style={{
-                borderTop: "1px solid #808080",
-                borderBottom: "1px solid #FFFFFF",
-              }}
-            />
+            <div className="win-separator" />
 
             {/* Social sign-in */}
             <div className="space-y-1.5">

@@ -63,4 +63,35 @@ body {
   .button {
     @apply bg-gradient-to-b from-gray-100 to-gray-300 hover:from-gray-200 hover:to-gray-400 border-2 border-t-white border-l-white border-r-gray-600 border-b-gray-600 px-6 py-1.5 text-sm font-alt font-semibold text-gray-800 shadow-sm active:border-t-gray-600 active:border-l-gray-600 active:border-r-white active:border-b-white;
   }
+
+  /* Auth page full-screen blue gradient background */
+  .auth-bg {
+    @apply flex flex-col min-h-screen;
+    background: linear-gradient(180deg, #1B5FA8 0%, #2E78C5 35%, #1E60A8 65%, #164E96 100%);
+  }
+
+  /* Win2000 sunken (inset) 3D border — used on inputs, list boxes, read-only displays */
+  .win-sunken {
+    border: 2px solid;
+    border-color: #808080 #DFDFDF #DFDFDF #808080;
+  }
+
+  /* Form field label — add a width class (e.g. w-24, w-32) per usage */
+  .win-form-label {
+    @apply text-xs font-alt font-semibold text-gray-800 text-right shrink-0;
+  }
+
+  /* Inline error message box */
+  .win-error {
+    @apply mb-3 px-3 py-2 text-xs font-alt text-red-800;
+    background: #FFF0F0;
+    border: 1px solid #CC0000;
+  }
+
+  /* Win2000-style double-line horizontal separator */
+  .win-separator {
+    @apply mb-3;
+    border-top: 1px solid #808080;
+    border-bottom: 1px solid #FFFFFF;
+  }
 }
