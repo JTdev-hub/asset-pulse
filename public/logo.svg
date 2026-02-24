@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 210 44" fill="none" role="img" aria-label="Asset Pulse">
+  <!-- Icon mark: orange rounded square -->
+  <rect x="0" y="2" width="40" height="40" rx="10" fill="#f54e00"/>
+
+  <!-- Pulse waveform: flat → spike up → trough → smaller spike → slight upward trend -->
+  <polyline
+    points="5,21 12,21 16,10 21,32 26,14 31,21 35,21"
+    stroke="white"
+    stroke-width="2.4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    fill="none"
+  />
+
+  <!-- Wordmark -->
+  <text
+    x="52"
+    y="28"
+    font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif"
+    font-size="18"
+    letter-spacing="-0.4"
+    fill="#1d1f27"
+  >
+    <tspan font-weight="700">asset</tspan><tspan font-weight="400" fill="#6b7280"> pulse</tspan>
+  </text>
+</svg>

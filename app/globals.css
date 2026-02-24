@@ -1,97 +1,239 @@
 @import url("https://fonts.googleapis.com/css2?family=Alata&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 
+/* ─── Design Tokens ──────────────────────────────────────────────────────────
+   PostHog-inspired light mode palette
+   ────────────────────────────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Page */
+  --ph-bg:             #f9f5f0;
+  --ph-surface:        #ffffff;
+
+  /* Navigation */
+  --ph-nav:            #1d1f27;
+  --ph-nav-hover:      rgba(255,255,255,0.08);
+  --ph-nav-active:     rgba(245,78,0,0.18);
+
+  /* Brand accent */
+  --ph-accent:         #f54e00;
+  --ph-accent-hover:   #d94500;
+  --ph-accent-light:   #fff3ee;
+
+  /* Text */
+  --ph-text:           #1d1f27;
+  --ph-text-muted:     #6b7280;
+  --ph-text-subtle:    #9ca3af;
+  --ph-text-on-dark:   #ffffff;
+
+  /* Borders */
+  --ph-border:         #e5e7eb;
+  --ph-border-strong:  #d1d5db;
+
+  /* States */
+  --ph-success:        #22c55e;
+  --ph-success-bg:     #f0fdf4;
+  --ph-success-text:   #15803d;
+  --ph-error:          #ef4444;
+  --ph-error-bg:       #fef2f2;
+  --ph-error-text:     #b91c1c;
+
+  /* Kept for Tailwind compatibility */
+  --background: var(--ph-bg);
+  --foreground: var(--ph-text);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-josefin-sans);
+  --font-sans:    var(--font-josefin-sans);
   --font-heading: var(--font-alata);
-  --font-alt: var(--font-montserrat);
+  --font-alt:     var(--font-montserrat);
 
-  /* 70s Warm palette */
+  /* Retro accent palette — still used for chart colors */
   --color-retro-purple: #722880;
-  --color-retro-coral: #d72d51;
+  --color-retro-coral:  #d72d51;
   --color-retro-orange: #eb5c18;
-  --color-retro-gold: #deb600;
-  --color-retro-cream: #f5e6d3;
-  --color-retro-brown: #6b4423;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-retro-gold:   #deb600;
+  --color-retro-cream:  #f5e6d3;
+  --color-retro-brown:  #6b4423;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans);
+  background: var(--ph-bg);
+  color: var(--ph-text);
+  font-family: var(--font-alt);
 }
+
+/* ─── Component Classes ──────────────────────────────────────────────────── */
 @layer components {
+
+  /* ── Navigation ─────────────────────────────────────────────────────────── */
   header {
-    /* Win2000-style gray menu bar with sunken separator at bottom */
-    background: linear-gradient(180deg, #e8e8e4 0%, #d4d0c8 100%);
-    border-bottom: 1px solid #808080;
-    box-shadow: 0 1px 0 #ffffff;
+    background: var(--ph-nav);
+    border-bottom: none;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 
     nav {
-      @apply flex flex-row justify-between items-center mx-auto container px-2 py-0.5;
+      @apply flex flex-row justify-between items-center mx-auto container px-6;
+      height: 56px;
     }
 
     ul {
-      @apply flex flex-row gap-0 items-center;
+      @apply flex flex-row gap-1 items-center;
     }
   }
 
   .nav-link {
-    /* Win2000 menu item — flat blue highlight on hover, white text */
-    @apply flex flex-row gap-2 items-center font-heading text-gray-800 px-4 py-1 text-sm transition-colors duration-75;
+    @apply flex flex-row gap-2 items-center font-alt text-sm font-medium px-3 py-1.5 rounded-md transition-colors duration-150;
+    color: rgba(255,255,255,0.72);
 
     &:hover {
-      background: #0054e3;
+      background: var(--ph-nav-hover);
       color: #ffffff;
+    }
+
+    &.active {
+      background: var(--ph-nav-active);
+      color: var(--ph-accent);
     }
   }
 
+  /* ── Card ────────────────────────────────────────────────────────────────── */
+  .ph-card {
+    background: var(--ph-surface);
+    border: 1px solid var(--ph-border);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  .ph-card-header {
+    @apply flex items-center justify-between px-5 py-3;
+    border-bottom: 1px solid var(--ph-border);
+
+    h2, .ph-card-title {
+      @apply text-sm font-semibold font-alt;
+      color: var(--ph-text);
+    }
+  }
+
+  /* ── Inputs ──────────────────────────────────────────────────────────────── */
+  .ph-input {
+    @apply w-full rounded-md px-3 py-2 text-sm font-alt transition-shadow duration-150;
+    background: var(--ph-surface);
+    border: 1px solid var(--ph-border-strong);
+    color: var(--ph-text);
+    outline: none;
+
+    &::placeholder {
+      color: var(--ph-text-subtle);
+    }
+
+    &:focus {
+      border-color: var(--ph-accent);
+      box-shadow: 0 0 0 3px rgba(245,78,0,0.12);
+    }
+  }
+
+  .ph-label {
+    @apply block text-xs font-semibold font-alt mb-1.5;
+    color: var(--ph-text-muted);
+    letter-spacing: 0.01em;
+  }
+
+  /* ── Buttons ─────────────────────────────────────────────────────────────── */
+
+  /* Base button — not used directly, styles are inlined into each variant below */
+  .ph-btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-semibold font-alt transition-all duration-150 cursor-pointer;
+    outline: none;
+    background: var(--ph-accent);
+    color: #ffffff;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--ph-accent-hover);
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+  }
+
+  .ph-btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-semibold font-alt transition-all duration-150 cursor-pointer;
+    outline: none;
+    background: transparent;
+    color: var(--ph-text-muted);
+    border: 1px solid var(--ph-border-strong);
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--ph-bg);
+      color: var(--ph-text);
+    }
+  }
+
+  /* ── Badges ──────────────────────────────────────────────────────────────── */
+  .ph-badge-stock {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold font-alt;
+    background: #eff6ff;
+    color: #1d4ed8;
+  }
+
+  .ph-badge-crypto {
+    @apply inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold font-alt;
+    background: #faf5ff;
+    color: #7e22ce;
+  }
+
+  /* ── Error / feedback ────────────────────────────────────────────────────── */
+  .ph-error {
+    @apply flex items-start gap-2 px-3 py-2.5 rounded-md text-xs font-alt;
+    background: var(--ph-error-bg);
+    color: var(--ph-error-text);
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+
+  /* ── Page ────────────────────────────────────────────────────────────────── */
+  .ph-page {
+    @apply min-h-screen;
+    background: var(--ph-bg);
+  }
+
+  /* ── Divider ─────────────────────────────────────────────────────────────── */
+  .ph-divider {
+    @apply flex items-center gap-3 my-4;
+    color: var(--ph-text-subtle);
+    font-size: 12px;
+    font-family: var(--font-alt);
+
+    &::before,
+    &::after {
+      content: "";
+      @apply flex-1;
+      border-top: 1px solid var(--ph-border);
+    }
+  }
+
+  /* ── Legacy .button alias ────────────────────────────────────────────────── */
   .button {
-    @apply bg-gradient-to-b from-gray-100 to-gray-300 hover:from-gray-200 hover:to-gray-400 border-2 border-t-white border-l-white border-r-gray-600 border-b-gray-600 px-6 py-1.5 text-sm font-alt font-semibold text-gray-800 shadow-sm active:border-t-gray-600 active:border-l-gray-600 active:border-r-white active:border-b-white;
-  }
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-semibold font-alt transition-all duration-150 cursor-pointer;
+    outline: none;
+    background: transparent;
+    color: var(--ph-text-muted);
+    border: 1px solid var(--ph-border-strong);
 
-  /* Auth page full-screen blue gradient background */
-  .auth-bg {
-    @apply flex flex-col min-h-screen;
-    background: linear-gradient(180deg, #1B5FA8 0%, #2E78C5 35%, #1E60A8 65%, #164E96 100%);
-  }
-
-  /* Win2000 sunken (inset) 3D border — used on inputs, list boxes, read-only displays */
-  .win-sunken {
-    border: 2px solid;
-    border-color: #808080 #DFDFDF #DFDFDF #808080;
-  }
-
-  /* Form field label — add a width class (e.g. w-24, w-32) per usage */
-  .win-form-label {
-    @apply text-xs font-alt font-semibold text-gray-800 text-right shrink-0;
-  }
-
-  /* Inline error message box */
-  .win-error {
-    @apply mb-3 px-3 py-2 text-xs font-alt text-red-800;
-    background: #FFF0F0;
-    border: 1px solid #CC0000;
-  }
-
-  /* Win2000-style double-line horizontal separator */
-  .win-separator {
-    @apply mb-3;
-    border-top: 1px solid #808080;
-    border-bottom: 1px solid #FFFFFF;
+    &:hover {
+      background: var(--ph-bg);
+      color: var(--ph-text);
+    }
   }
 }

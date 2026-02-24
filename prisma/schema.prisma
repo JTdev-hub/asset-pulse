@@ -4,9 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
@@ -14,12 +12,15 @@ datasource db {
 model investments {
   id           BigInt   @id @default(autoincrement())
   created_at   DateTime @default(now()) @db.Timestamptz(6)
+  userId       String   @db.Uuid
   tickerSymbol String   @db.VarChar
   tradeDate    DateTime @db.Timestamp(6)
   broker       String?  @db.VarChar
   quantity     Decimal  @db.Decimal
   sharePrice   Decimal  @db.Decimal
   fee          Decimal  @db.Decimal
+
+  @@index([userId])
 }
 
 model Profile {
@@ -27,4 +28,25 @@ model Profile {
   preferredCurrency String @default("PHP")
 
   @@map("profiles")
+}
+
+/// Registry of tradable financial instruments — US stocks, ETFs, PH stocks, crypto, etc.
+/// `type`     : "STOCK" | "ETF" | "CRYPTO"
+/// `exchange` : "NASDAQ" | "NYSE" | "NYSE Arca" | "PSE" | "CRYPTO" | etc.
+/// `country`  : ISO 2-letter code — "US", "PH", etc.
+/// `currency` : ISO 4217 code — "USD", "PHP", etc.
+model Instrument {
+  id       Int    @id @default(autoincrement())
+  symbol   String @db.VarChar(20)
+  name     String @db.VarChar(255)
+  type     String @db.VarChar(20)
+  exchange String @db.VarChar(50)
+  currency String @default("USD") @db.VarChar(10)
+  country  String @default("US") @db.VarChar(10)
+
+  @@unique([symbol, exchange])
+  @@index([symbol])
+  @@index([type])
+  @@index([country])
+  @@map("instruments")
 }
