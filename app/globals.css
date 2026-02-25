@@ -223,6 +223,35 @@ body {
     }
   }
 
+  /* ── Table ───────────────────────────────────────────────────────────────── */
+  .ph-table-header {
+    @apply px-4 py-2.5 font-semibold whitespace-nowrap;
+    color: var(--ph-text-muted);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .ph-hover-row {
+    transition: background 100ms ease;
+
+    &:hover {
+      background: var(--ph-bg);
+    }
+  }
+
+  /* ── Dropdown ────────────────────────────────────────────────────────────── */
+  .ph-shadow-dropdown {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  }
+
+  /* ── Button group / toggle ───────────────────────────────────────────────── */
+  .ph-button-group {
+    @apply flex rounded-lg overflow-hidden;
+    border: 1px solid var(--ph-border);
+    width: fit-content;
+  }
+
   /* ── Legacy .button alias ────────────────────────────────────────────────── */
   .button {
     @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-semibold font-alt transition-all duration-150 cursor-pointer;

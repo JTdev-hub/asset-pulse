@@ -2,18 +2,16 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/app/lib/supabase/server";
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { LoginSchema, SignupSchema } from "@/app/lib/schemas/auth";
+import prisma from "@/app/lib/prisma";
 
 export async function signInWithEmail(
   email: string,
-  password: string
+  password: string,
 ): Promise<{ error: string } | void> {
-  if (!email || !EMAIL_REGEX.test(email)) {
-    return { error: "Please enter a valid email address." };
-  }
-  if (!password) {
-    return { error: "Password is required." };
+  const result = LoginSchema.safeParse({ email, password });
+  if (!result.success) {
+    return { error: result.error.issues[0].message };
   }
 
   const supabase = await createClient();
@@ -28,16 +26,11 @@ export async function signInWithEmail(
 
 export async function signUpWithEmail(
   email: string,
-  password: string
+  password: string,
 ): Promise<{ error: string } | void> {
-  if (!email || !EMAIL_REGEX.test(email)) {
-    return { error: "Please enter a valid email address." };
-  }
-  if (!password) {
-    return { error: "Password is required." };
-  }
-  if (password.length < 6) {
-    return { error: "Password must be at least 6 characters." };
+  const result = SignupSchema.safeParse({ email, password });
+  if (!result.success) {
+    return { error: result.error.issues[0].message };
   }
 
   const supabase = await createClient();
@@ -54,4 +47,32 @@ export async function signOut(): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/auth/login");
+}
+
+export async function getUserId(): Promise<string | undefined> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect("/auth/login");
+  return user.id;
+}
+
+export async function updateProfile(
+  preferredCurrency: string,
+): Promise<{ error: string } | void> {
+  const userId = await getUserId();
+
+  try {
+    console.log(userId);
+    await prisma.profile.update({
+      where: { userId: userId },
+      data: { preferredCurrency: preferredCurrency },
+    });
+  } catch (e) {
+    return { error: "Failed to update profile. Please try again" };
+  }
+
+  redirect("/dashboard");
 }

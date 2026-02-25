@@ -14,6 +14,7 @@ model investments {
   created_at   DateTime @default(now()) @db.Timestamptz(6)
   userId       String   @db.Uuid
   tickerSymbol String   @db.VarChar
+  tradeType    String   @db.VarChar
   tradeDate    DateTime @db.Timestamp(6)
   broker       String?  @db.VarChar
   quantity     Decimal  @db.Decimal
@@ -26,6 +27,7 @@ model investments {
 model Profile {
   userId            String @id @db.Uuid
   preferredCurrency String @default("PHP")
+  hasCompletedOnBoarding Boolean @default(false)
 
   @@map("profiles")
 }

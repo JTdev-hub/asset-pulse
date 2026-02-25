@@ -1,6 +1,9 @@
 "use client";
 
 import { PieChart, Pie, Tooltip, ResponsiveContainer } from "recharts";
+import PageHeader from "@/app/components/PageHeader";
+import StatCard from "@/app/components/StatCard";
+import PnLDisplay from "@/app/components/PnLDisplay";
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
 
@@ -17,7 +20,6 @@ const CHART_COLORS = ["#722880", "#1B5FA8", "#eb5c18", "#deb600", "#d72d51"];
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const usd = (n: number) => n.toLocaleString("en-US", { style: "currency", currency: "USD" });
-const pct = (n: number) => `${n >= 0 ? "+" : ""}${n.toFixed(2)}%`;
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
@@ -46,17 +48,10 @@ export default function DashboardPage() {
       <div className="container mx-auto px-6 py-8 max-w-7xl">
 
         {/* ── Page header ──────────────────────────────────────────────────── */}
-        <div className="mb-7">
-          <h1
-            className="text-2xl font-heading font-bold mb-1"
-            style={{ color: "var(--ph-text)" }}
-          >
-            Dashboard
-          </h1>
-          <p className="text-sm font-alt" style={{ color: "var(--ph-text-muted)" }}>
-            Portfolio overview · February 24, 2026 · Currency: PHP
-          </p>
-        </div>
+        <PageHeader
+          title="Dashboard"
+          subtitle="Portfolio overview · February 24, 2026 · Currency: PHP"
+        />
 
         {/* ── Stat cards ───────────────────────────────────────────────────── */}
         <div className="grid grid-cols-3 gap-4 mb-6">
@@ -73,7 +68,7 @@ export default function DashboardPage() {
           <StatCard
             label="Total P&L"
             value={`${totalPnl >= 0 ? "+" : ""}${usd(totalPnl)}`}
-            sub={pct(totalPnlPct)}
+            sub={`${totalPnlPct >= 0 ? "+" : ""}${totalPnlPct.toFixed(2)}%`}
             positive={totalPnl >= 0}
             accentColor={totalPnl >= 0 ? "var(--ph-success)" : "var(--ph-error)"}
           />
@@ -109,13 +104,9 @@ export default function DashboardPage() {
                       (col) => (
                         <th
                           key={col}
-                          className="px-4 py-2.5 font-semibold whitespace-nowrap"
+                          className="ph-table-header"
                           style={{
                             textAlign: ["Symbol", "Name", "Type"].includes(col) ? "left" : "right",
-                            color: "var(--ph-text-muted)",
-                            fontSize: 11,
-                            letterSpacing: "0.04em",
-                            textTransform: "uppercase",
                           }}
                         >
                           {col}
@@ -129,9 +120,8 @@ export default function DashboardPage() {
                   {holdings.map((h, i) => (
                     <tr
                       key={h.symbol}
+                      className="ph-hover-row"
                       style={{ borderBottom: "1px solid var(--ph-border)" }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--ph-bg)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                     >
                       {/* Thin color strip */}
                       <td style={{ width: 3, padding: 0, background: CHART_COLORS[i] }} />
@@ -163,16 +153,12 @@ export default function DashboardPage() {
                       <td className="px-4 py-3 text-right font-semibold" style={{ color: "var(--ph-text)" }}>
                         {usd(h.currentValue)}
                       </td>
-                      <td className="px-4 py-3 text-right whitespace-nowrap">
-                        <span
-                          className="font-semibold"
-                          style={{ color: h.pnl >= 0 ? "var(--ph-success-text)" : "var(--ph-error-text)" }}
-                        >
-                          {h.pnl >= 0 ? "+" : ""}{usd(h.pnl)}
-                        </span>
-                        <span className="ml-1.5 text-xs" style={{ color: "var(--ph-text-subtle)" }}>
-                          ({pct(h.pnlPct)})
-                        </span>
+                      <td className="px-4 py-3 text-right">
+                        <PnLDisplay
+                          value={h.pnl}
+                          formattedValue={usd(h.pnl)}
+                          percentage={h.pnlPct}
+                        />
                       </td>
                     </tr>
                   ))}
@@ -195,16 +181,13 @@ export default function DashboardPage() {
                     <td className="px-4 py-3 text-right font-bold" style={{ color: "var(--ph-text)" }}>
                       {usd(totalValue)}
                     </td>
-                    <td className="px-4 py-3 text-right whitespace-nowrap">
-                      <span
-                        className="font-bold"
-                        style={{ color: totalPnl >= 0 ? "var(--ph-success-text)" : "var(--ph-error-text)" }}
-                      >
-                        {totalPnl >= 0 ? "+" : ""}{usd(totalPnl)}
-                      </span>
-                      <span className="ml-1.5 text-xs" style={{ color: "var(--ph-text-subtle)" }}>
-                        ({pct(totalPnlPct)})
-                      </span>
+                    <td className="px-4 py-3 text-right">
+                      <PnLDisplay
+                        value={totalPnl}
+                        formattedValue={usd(totalPnl)}
+                        percentage={totalPnlPct}
+                        bold
+                      />
                     </td>
                   </tr>
                 </tfoot>
@@ -304,52 +287,6 @@ export default function DashboardPage() {
           </div>
 
         </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Stat Card ────────────────────────────────────────────────────────────────
-
-function StatCard({
-  label,
-  value,
-  sub,
-  positive,
-  accentColor,
-}: {
-  label: string;
-  value: string;
-  sub?: string;
-  positive?: boolean;
-  accentColor: string;
-}) {
-  return (
-    <div
-      className="ph-card overflow-hidden"
-      style={{ borderLeft: `3px solid ${accentColor}` }}
-    >
-      <div className="px-5 py-4">
-        <p
-          className="text-xs font-alt font-semibold uppercase tracking-wider mb-2"
-          style={{ color: "var(--ph-text-muted)" }}
-        >
-          {label}
-        </p>
-        <p
-          className="text-2xl font-heading font-bold"
-          style={{ color: "var(--ph-text)" }}
-        >
-          {value}
-        </p>
-        {sub && (
-          <p
-            className="text-xs font-alt font-semibold mt-1"
-            style={{ color: positive ? "var(--ph-success-text)" : "var(--ph-error-text)" }}
-          >
-            {sub} vs. cost basis
-          </p>
-        )}
       </div>
     </div>
   );

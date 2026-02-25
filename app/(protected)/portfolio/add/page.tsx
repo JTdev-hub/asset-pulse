@@ -3,10 +3,14 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
+  getInstrumentPrice,
   Instrument,
   InstrumentType,
   searchInstruments,
 } from "@/app/lib/actions/instruments";
+import Breadcrumb from "@/app/components/Breadcrumb";
+import PageHeader from "@/app/components/PageHeader";
+import BuySellToggle from "@/app/components/BuySellToggle";
 
 // ── Mock instrument data ────────────────────────────────────────────────────
 // Replace with searchInstruments() server action when wiring up the backend.
@@ -75,12 +79,16 @@ export default function AddInvestmentPage() {
   }, []);
 
   useEffect(() => {
-    if (!query.trim()) {
-      setResults([]);
-      return;
-    }
+    const timeoutId = setTimeout(async () => {
+      if (query.trim()) {
+        searchInstruments(query.trim()).then(setResults);
+      } else {
+        setResults([]);
+        return;
+      }
+    }, 300);
 
-    searchInstruments(query.trim()).then(setResults);
+    return () => clearTimeout(timeoutId);
   }, [query]);
 
   function selectInstrument(instrument: Instrument) {
@@ -88,6 +96,7 @@ export default function AddInvestmentPage() {
     setQuery("");
     setDropdownOpen(false);
     setHoveredIdx(null);
+    getInstrumentPrice(instrument.symbol).then((p) => setPrice(String(p)));
   }
 
   function clearSelection() {
@@ -104,37 +113,17 @@ export default function AddInvestmentPage() {
   return (
     <div className="ph-page min-h-screen p-6">
       <div className="max-w-2xl mx-auto">
-        {/* Breadcrumb */}
-        <div
-          className="flex items-center gap-1.5 text-xs font-alt mb-6"
-          style={{ color: "var(--ph-text-muted)" }}
-        >
-          <Link
-            href="/portfolio"
-            className="hover:underline"
-            style={{ color: "var(--ph-text-muted)" }}
-          >
-            Portfolio
-          </Link>
-          <span>/</span>
-          <span style={{ color: "var(--ph-text)" }}>Add Investment</span>
-        </div>
+        <Breadcrumb
+          items={[
+            { label: "Portfolio", href: "/portfolio" },
+            { label: "Add Investment" },
+          ]}
+        />
 
-        {/* Page header */}
-        <div className="mb-6">
-          <h1
-            className="text-2xl font-heading font-bold"
-            style={{ color: "var(--ph-text)" }}
-          >
-            Add Investment
-          </h1>
-          <p
-            className="text-sm font-alt mt-1"
-            style={{ color: "var(--ph-text-muted)" }}
-          >
-            Record a buy or sell trade for any instrument in your portfolio.
-          </p>
-        </div>
+        <PageHeader
+          title="Add Investment"
+          subtitle="Record a buy or sell trade for any instrument in your portfolio."
+        />
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* ── Card 1: Instrument ── */}
@@ -306,39 +295,8 @@ export default function AddInvestmentPage() {
               {/* Buy / Sell toggle */}
               <div>
                 <label className="ph-label">Trade Type</label>
-                <div
-                  className="flex mt-1.5 rounded-lg overflow-hidden"
-                  style={{
-                    border: "1px solid var(--ph-border)",
-                    width: "fit-content",
-                  }}
-                >
-                  {(["BUY", "SELL"] as const).map((type) => (
-                    <button
-                      key={type}
-                      type="button"
-                      onClick={() => setTradeType(type)}
-                      className="px-6 py-2 text-xs font-semibold font-alt transition-colors duration-150"
-                      style={{
-                        background:
-                          tradeType === type
-                            ? type === "BUY"
-                              ? "var(--ph-success)"
-                              : "var(--ph-error)"
-                            : "var(--ph-surface)",
-                        color:
-                          tradeType === type
-                            ? "#ffffff"
-                            : "var(--ph-text-muted)",
-                        borderRight:
-                          type === "BUY"
-                            ? "1px solid var(--ph-border)"
-                            : "none",
-                      }}
-                    >
-                      {type === "BUY" ? "▲ BUY" : "▼ SELL"}
-                    </button>
-                  ))}
+                <div className="mt-1.5">
+                  <BuySellToggle value={tradeType} onChange={setTradeType} />
                 </div>
               </div>
 

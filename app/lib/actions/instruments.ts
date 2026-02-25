@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/app/lib/prisma";
+import YahooFinance from "yahoo-finance2";
 
 export type InstrumentType = "STOCK" | "ETF" | "CRYPTO";
 
@@ -56,4 +57,16 @@ export async function listInstruments(filters?: {
     },
     orderBy: { symbol: "asc" },
   });
+}
+
+export async function getInstrumentPrice(
+  symbol: string | undefined,
+): Promise<string> {
+  const yahooFinance = new YahooFinance();
+
+  if (!symbol) return "0";
+
+  const quote = await yahooFinance.quote(symbol);
+
+  return quote.regularMarketPrice ?? 0;
 }

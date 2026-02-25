@@ -4,6 +4,7 @@ import PortfolioIcon from "./icons/PortfolioIcon";
 import ProfileIcon from "./icons/ProfileIcon";
 import AnalyticsIcon from "./icons/AnalyticsIcon";
 import LogoMark from "./icons/LogoMark";
+import UserMenu from "./UserMenu";
 
 const NavBar = () => {
   return (
@@ -56,14 +57,7 @@ const NavBar = () => {
           <span className="text-xs font-alt cursor-pointer px-2 py-1 rounded transition-colors duration-150 text-white/55 hover:text-white">
             Help
           </span>
-          {/* Avatar placeholder */}
-          <div
-            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold font-alt text-white cursor-pointer"
-            style={{ background: "var(--ph-accent)" }}
-            title="Profile"
-          >
-            U
-          </div>
+          <UserMenu />
         </div>
       </nav>
     </header>
