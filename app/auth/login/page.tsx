@@ -7,7 +7,7 @@ import { createClient } from "@/app/lib/supabase/client";
 import { signInWithEmail } from "@/app/lib/actions/auth";
 import AuthLayout from "@/app/components/AuthLayout";
 import FormField from "@/app/components/FormField";
-import Win2000Input from "@/app/components/Win2000Input";
+import Input from "@/app/components/Input";
 
 export default function LoginPage() {
   const supabase = createClient();
@@ -31,16 +31,24 @@ export default function LoginPage() {
 
   async function handleSignInWithGoogle() {
     // OAuth must stay client-side — it needs window.location for the redirect URL
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
+
+    try {
+      await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+        },
+      });
+    } catch (e) {
+      setError("Cannot sign up using Google");
+    }
   }
 
   return (
-    <AuthLayout title="Sign in to Asset Pulse" subtitle="Track your investment portfolio">
+    <AuthLayout
+      title="Sign in to Asset Pulse"
+      subtitle="Track your investment portfolio"
+    >
       {/* Card */}
       <div className="ph-card p-6">
         {/* Error */}
@@ -69,7 +77,7 @@ export default function LoginPage() {
                 Forgot password?
               </span>
             </div>
-            <Win2000Input
+            <Input
               type="password"
               placeholder="••••••••"
               value={password}

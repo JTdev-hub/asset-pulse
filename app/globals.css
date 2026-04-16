@@ -6,36 +6,36 @@
    ────────────────────────────────────────────────────────────────────────── */
 :root {
   /* Page */
-  --ph-bg:             #f9f5f0;
-  --ph-surface:        #ffffff;
+  --ph-bg: #f9f5f0;
+  --ph-surface: #ffffff;
 
   /* Navigation */
-  --ph-nav:            #1d1f27;
-  --ph-nav-hover:      rgba(255,255,255,0.08);
-  --ph-nav-active:     rgba(245,78,0,0.18);
+  --ph-nav: #1d1f27;
+  --ph-nav-hover: rgba(255, 255, 255, 0.08);
+  --ph-nav-active: rgba(245, 78, 0, 0.18);
 
   /* Brand accent */
-  --ph-accent:         #f54e00;
-  --ph-accent-hover:   #d94500;
-  --ph-accent-light:   #fff3ee;
+  --ph-accent: #f54e00;
+  --ph-accent-hover: #d94500;
+  --ph-accent-light: #fff3ee;
 
   /* Text */
-  --ph-text:           #1d1f27;
-  --ph-text-muted:     #6b7280;
-  --ph-text-subtle:    #9ca3af;
-  --ph-text-on-dark:   #ffffff;
+  --ph-text: #1d1f27;
+  --ph-text-muted: #6b7280;
+  --ph-text-subtle: #9ca3af;
+  --ph-text-on-dark: #ffffff;
 
   /* Borders */
-  --ph-border:         #e5e7eb;
-  --ph-border-strong:  #d1d5db;
+  --ph-border: #e5e7eb;
+  --ph-border-strong: #d1d5db;
 
   /* States */
-  --ph-success:        #22c55e;
-  --ph-success-bg:     #f0fdf4;
-  --ph-success-text:   #15803d;
-  --ph-error:          #ef4444;
-  --ph-error-bg:       #fef2f2;
-  --ph-error-text:     #b91c1c;
+  --ph-success: #22c55e;
+  --ph-success-bg: #f0fdf4;
+  --ph-success-text: #15803d;
+  --ph-error: #ef4444;
+  --ph-error-bg: #fef2f2;
+  --ph-error-text: #b91c1c;
 
   /* Kept for Tailwind compatibility */
   --background: var(--ph-bg);
@@ -45,17 +45,17 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans:    var(--font-josefin-sans);
+  --font-sans: var(--font-josefin-sans);
   --font-heading: var(--font-alata);
-  --font-alt:     var(--font-montserrat);
+  --font-alt: var(--font-montserrat);
 
   /* Retro accent palette — still used for chart colors */
   --color-retro-purple: #722880;
-  --color-retro-coral:  #d72d51;
+  --color-retro-coral: #d72d51;
   --color-retro-orange: #eb5c18;
-  --color-retro-gold:   #deb600;
-  --color-retro-cream:  #f5e6d3;
-  --color-retro-brown:  #6b4423;
+  --color-retro-gold: #deb600;
+  --color-retro-cream: #f5e6d3;
+  --color-retro-brown: #6b4423;
 }
 
 body {
@@ -66,12 +66,11 @@ body {
 
 /* ─── Component Classes ──────────────────────────────────────────────────── */
 @layer components {
-
   /* ── Navigation ─────────────────────────────────────────────────────────── */
   header {
     background: var(--ph-nav);
     border-bottom: none;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 
     nav {
       @apply flex flex-row justify-between items-center mx-auto container px-6;
@@ -85,7 +84,7 @@ body {
 
   .nav-link {
     @apply flex flex-row gap-2 items-center font-alt text-sm font-medium px-3 py-1.5 rounded-md transition-colors duration-150;
-    color: rgba(255,255,255,0.72);
+    color: rgba(255, 255, 255, 0.72);
 
     &:hover {
       background: var(--ph-nav-hover);
@@ -103,14 +102,17 @@ body {
     background: var(--ph-surface);
     border: 1px solid var(--ph-border);
     border-radius: 8px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    box-shadow:
+      0 1px 3px rgba(0, 0, 0, 0.06),
+      0 1px 2px rgba(0, 0, 0, 0.04);
   }
 
   .ph-card-header {
     @apply flex items-center justify-between px-5 py-3;
     border-bottom: 1px solid var(--ph-border);
 
-    h2, .ph-card-title {
+    h2,
+    .ph-card-title {
       @apply text-sm font-semibold font-alt;
       color: var(--ph-text);
     }
@@ -130,7 +132,7 @@ body {
 
     &:focus {
       border-color: var(--ph-accent);
-      box-shadow: 0 0 0 3px rgba(245,78,0,0.12);
+      box-shadow: 0 0 0 3px rgba(245, 78, 0, 0.12);
     }
   }
 
@@ -194,12 +196,20 @@ body {
     color: #7e22ce;
   }
 
+  /* ── Success / feedback ────────────────────────────────────────────────────── */
+  .ph-success {
+    @apply flex items-start gap-2 px-3 py-2.5 rounded-md text-xs font-alt;
+    background: var(--ph-success-bg);
+    color: var(--ph-success-text);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
   /* ── Error / feedback ────────────────────────────────────────────────────── */
   .ph-error {
     @apply flex items-start gap-2 px-3 py-2.5 rounded-md text-xs font-alt;
     background: var(--ph-error-bg);
     color: var(--ph-error-text);
-    border: 1px solid rgba(239,68,68,0.2);
+    border: 1px solid rgba(239, 68, 68, 0.2);
   }
 
   /* ── Page ────────────────────────────────────────────────────────────────── */
@@ -242,7 +252,7 @@ body {
 
   /* ── Dropdown ────────────────────────────────────────────────────────────── */
   .ph-shadow-dropdown {
-    box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   }
 
   /* ── Button group / toggle ───────────────────────────────────────────────── */

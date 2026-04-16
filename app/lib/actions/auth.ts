@@ -15,13 +15,21 @@ export async function signInWithEmail(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
   if (error) {
     return { error: error.message };
   }
 
-  redirect("/");
+  redirect(await getPostLoginDestination(data.user.id));
+}
+
+export async function getPostLoginDestination(userId: string): Promise<string> {
+  const profile = await prisma.profile.findUnique({ where: { userId } });
+  return profile?.hasCompletedOnBoarding ? "/" : "/auth/preferred-currency";
 }
 
 export async function signUpWithEmail(
@@ -39,8 +47,6 @@ export async function signUpWithEmail(
   if (error) {
     return { error: error.message };
   }
-
-  redirect("/auth/preferred-currency");
 }
 
 export async function signOut(): Promise<void> {
@@ -49,7 +55,7 @@ export async function signOut(): Promise<void> {
   redirect("/auth/login");
 }
 
-export async function getUserId(): Promise<string | undefined> {
+export async function getUserId(): Promise<string> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -65,14 +71,17 @@ export async function updateProfile(
   const userId = await getUserId();
 
   try {
-    console.log(userId);
     await prisma.profile.update({
-      where: { userId: userId },
-      data: { preferredCurrency: preferredCurrency },
+      where: { userId },
+      data: {
+        preferredCurrency,
+        hasCompletedOnBoarding: true,
+      },
     });
   } catch (e) {
+    console.error(e);
     return { error: "Failed to update profile. Please try again" };
   }
 
-  redirect("/dashboard");
+  redirect("/");
 }

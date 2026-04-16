@@ -272,10 +272,7 @@ export default function AddInvestmentPage() {
                           <p
                             className="text-xs font-alt mt-1"
                             style={{ color: "var(--ph-text-subtle)" }}
-                          >
-                            Only a small set of instruments is shown in this
-                            demo.
-                          </p>
+                          ></p>
                         </div>
                       )}
                     </div>

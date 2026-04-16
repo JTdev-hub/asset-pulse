@@ -28,9 +28,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Prisma client singleton: `app/lib/prisma.ts`
 - Generated client path: `app/generated/prisma/` (gitignored)
 
-### Styling — Windows 2000 Theme
+### Styling
 
-The UI uses a retro Windows 2000 aesthetic. Custom theme colors and CSS component classes (`.button`, `.nav-link`) are defined in `app/globals.css` using Tailwind's `@theme` directive. Key design tokens: retro-purple, coral, orange, gold, cream, brown, plus Win2000 dialog grays and blue title bar gradients.
+Custom theme colors and CSS component classes (`.button`, `.nav-link`) are defined in `app/globals.css` using Tailwind's `@theme` directive.
 
 ### Auth
 
@@ -67,18 +67,11 @@ The UI uses a retro Windows 2000 aesthetic. Custom theme colors and CSS componen
 - Generated client path: `app/generated/prisma/` (gitignored)
 - SQL that references `auth.users` (FK, triggers) must be run in the Supabase SQL editor — stored in `prisma/supabase-auth.sql`
 
-### Win2000 UI Components
+### UI Components
 
 Reusable components in `app/components/`:
-- `Win2000Window` — generic window chrome (frame + title bar + gray body + status bar). Use this for any dialog or panel.
-- `Win2000TitleBar` — blue gradient title bar with window controls. Accepts `title` prop.
-- `Win2000Input` — sunken-border styled input. Passes through all HTML input props.
-- `Win2000StatusBar` — bottom status bar. Accepts optional `right` slot.
-- `Win2000Taskbar` — bottom taskbar strip. Accepts `title` prop.
-
-### Styling — Windows 2000 Theme
-
-The UI uses a retro Windows 2000 aesthetic. Custom theme colors and CSS component classes (`.button`, `.nav-link`) are defined in `app/globals.css` using Tailwind's `@theme` directive. Key design tokens: retro-purple, coral, orange, gold, cream, brown, plus Win2000 dialog grays and blue title bar gradients.
+- `Input` — styled input. Passes through all HTML input props.
+- `FormField` — label + `Input` wrapper. Accepts `label` plus all HTML input props.
 
 ### Constants
 

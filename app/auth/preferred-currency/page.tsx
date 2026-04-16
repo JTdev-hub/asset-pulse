@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CURRENCIES } from "@/app/lib/constants/currencies";
 import AuthLayout from "@/app/components/AuthLayout";
 import { updateProfile } from "@/app/lib/actions/auth";
-import { redirect } from "next/dist/server/api-utils";
 
 export default function PreferredCurrencyPage() {
   const [selected, setSelected] = useState("PHP");
@@ -18,15 +17,18 @@ export default function PreferredCurrencyPage() {
     setLoading(false);
 
     if (result?.error) {
-      setError(error);
-      console.log(error);
+      setError(result.error);
     }
   }
 
-  const filtered = CURRENCIES.filter(
-    (c) =>
-      c.code.toLowerCase().includes(search.toLowerCase()) ||
-      c.label.toLowerCase().includes(search.toLowerCase()),
+  const filtered = useMemo(
+    () =>
+      CURRENCIES.filter(
+        (c) =>
+          c.code.toLocaleLowerCase().includes(search.toLowerCase()) ||
+          c.label.toLowerCase().includes(search.toLowerCase()),
+      ),
+    [search],
   );
 
   const selectedCurrency = CURRENCIES.find((c) => c.code === selected);
@@ -38,6 +40,7 @@ export default function PreferredCurrencyPage() {
     >
       {/* Card */}
       <div className="ph-card overflow-hidden">
+        {error && <div className="ph-error m-4 mb-0">{error}</div>}
         <div className="p-4 pb-0">
           {/* Search filter */}
           <input

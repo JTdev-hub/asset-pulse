@@ -12,6 +12,7 @@ export default function SignUpPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState<string | null>(null);
 
   async function handleSignUp() {
     setError(null);
@@ -26,17 +27,29 @@ export default function SignUpPage() {
     setLoading(false);
 
     // signUpWithEmail redirects on success, so result only exists on error
+
     if (result?.error) {
       setError(result.error);
+    } else {
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      setSuccess(
+        "You have successfully created your account. Kindly check your email for account confirmation",
+      );
     }
   }
 
   return (
-    <AuthLayout title="Create your account" subtitle="Start tracking your portfolio today">
+    <AuthLayout
+      title="Create your account"
+      subtitle="Start tracking your portfolio today"
+    >
       {/* Card */}
       <div className="ph-card p-6">
         {/* Error */}
         {error && <div className="ph-error mb-4">{error}</div>}
+        {success && <div className="ph-success mb-4">{success}</div>}
 
         {/* Form */}
         <div className="space-y-4">
