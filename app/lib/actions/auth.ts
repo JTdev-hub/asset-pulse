@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/app/lib/supabase/server";
 import { LoginSchema, SignupSchema } from "@/app/lib/schemas/auth";
 import prisma from "@/app/lib/prisma";
+import { getPostLoginDestination } from "@/app/lib/auth/post-login";
 
 export async function signInWithEmail(
   email: string,
@@ -25,11 +26,6 @@ export async function signInWithEmail(
   }
 
   redirect(await getPostLoginDestination(data.user.id));
-}
-
-export async function getPostLoginDestination(userId: string): Promise<string> {
-  const profile = await prisma.profile.findUnique({ where: { userId } });
-  return profile?.hasCompletedOnBoarding ? "/" : "/auth/preferred-currency";
 }
 
 export async function signUpWithEmail(

@@ -255,6 +255,11 @@ body {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   }
 
+  /* ── Hover ────────────────────────────────────────────────────────────── */
+  .ph-dropdown-row:hover {
+    background: var(--ph-accent-light);
+  }
+
   /* ── Button group / toggle ───────────────────────────────────────────────── */
   .ph-button-group {
     @apply flex rounded-lg overflow-hidden;

@@ -2,6 +2,7 @@
 
 import prisma from "@/app/lib/prisma";
 import YahooFinance from "yahoo-finance2";
+import { getUserId } from "./auth";
 
 export type InstrumentType = "STOCK" | "ETF" | "CRYPTO";
 
@@ -15,6 +16,7 @@ export async function searchInstruments(
   query: string,
   filters?: { type?: InstrumentType; country?: string },
 ) {
+  await getUserId();
   const q = query.trim();
   if (!q) return [];
 
@@ -37,6 +39,8 @@ export async function searchInstruments(
  * Returns null if not found.
  */
 export async function getInstrument(symbol: string, exchange: string) {
+  await getUserId();
+
   return prisma.instrument.findUnique({
     where: { symbol_exchange: { symbol: symbol.toUpperCase(), exchange } },
   });
@@ -50,6 +54,8 @@ export async function listInstruments(filters?: {
   type?: InstrumentType;
   country?: string;
 }) {
+  await getUserId();
+
   return prisma.instrument.findMany({
     where: {
       ...(filters?.type ? { type: filters.type } : {}),
@@ -62,6 +68,8 @@ export async function listInstruments(filters?: {
 export async function getInstrumentPrice(
   symbol: string | undefined,
 ): Promise<string> {
+  await getUserId();
+
   const yahooFinance = new YahooFinance();
 
   if (!symbol) return "0";

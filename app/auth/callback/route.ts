@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/app/lib/supabase/server";
-import { getPostLoginDestination } from "@/app/lib/actions/auth";
+import { getPostLoginDestination } from "@/app/lib/auth/post-login";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);

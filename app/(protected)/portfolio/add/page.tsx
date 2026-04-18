@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, SubmitEvent } from "react";
 import Link from "next/link";
 import {
   getInstrumentPrice,
@@ -11,23 +11,13 @@ import {
 import Breadcrumb from "@/app/components/Breadcrumb";
 import PageHeader from "@/app/components/PageHeader";
 import BuySellToggle from "@/app/components/BuySellToggle";
+import TypeBadge from "@/app/components/TypeBadge";
+import SearchIcon from "@/app/components/icons/SearchIcon";
+import { createInvestment } from "@/app/lib/actions/investments";
+import InstrumentSearch from "@/app/components/InstrumentSearch";
 
 // ── Mock instrument data ────────────────────────────────────────────────────
 // Replace with searchInstruments() server action when wiring up the backend.
-
-// ── Badge helper ────────────────────────────────────────────────────────────
-function TypeBadge({ type }: { type: string }) {
-  if (type === "STOCK") return <span className="ph-badge-stock">{type}</span>;
-  if (type === "CRYPTO") return <span className="ph-badge-crypto">{type}</span>;
-  return (
-    <span
-      className="text-xs font-semibold font-alt px-2 py-0.5 rounded"
-      style={{ background: "#eff6ff", color: "#1d4ed8" }}
-    >
-      {type}
-    </span>
-  );
-}
 
 // ── Format helpers ──────────────────────────────────────────────────────────
 const usd = (n: number) =>
@@ -39,13 +29,8 @@ const usd = (n: number) =>
 // ── Page ────────────────────────────────────────────────────────────────────
 export default function AddInvestmentPage() {
   // Instrument search
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<Instrument[]>([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
-  const [selected, setSelected] = useState<Instrument | null>(null);
-  const searchRef = useRef<HTMLDivElement>(null);
-
+  const [selectedInstrument, setSelectedInstrument] =
+    useState<Instrument | null>(null);
   // Trade fields
   const [tradeType, setTradeType] = useState<"BUY" | "SELL">("BUY");
   const [tradeDate, setTradeDate] = useState(
@@ -56,58 +41,50 @@ export default function AddInvestmentPage() {
   const [fee, setFee] = useState("0");
   const [broker, setBroker] = useState("");
 
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
   // Derived values
   const subtotal = parseFloat(quantity || "0") * parseFloat(price || "0");
   const feeAmt = parseFloat(fee || "0");
-  const total = subtotal + feeAmt;
+  const total = tradeType === "BUY" ? subtotal + feeAmt : subtotal - feeAmt;
 
   const canSubmit =
-    selected !== null &&
+    selectedInstrument !== null &&
     parseFloat(quantity || "0") > 0 &&
     parseFloat(price || "0") > 0 &&
     !!tradeDate;
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
-  useEffect(() => {
-    const timeoutId = setTimeout(async () => {
-      if (query.trim()) {
-        searchInstruments(query.trim()).then(setResults);
-      } else {
-        setResults([]);
-        return;
-      }
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [query]);
-
-  function selectInstrument(instrument: Instrument) {
-    setSelected(instrument);
-    setQuery("");
-    setDropdownOpen(false);
-    setHoveredIdx(null);
+  function handleInstrumentSelect(instrument: Instrument) {
+    setSelectedInstrument(instrument);
     getInstrumentPrice(instrument.symbol).then((p) => setPrice(String(p)));
   }
 
-  function clearSelection() {
-    setSelected(null);
-    setQuery("");
+  function handleInstrumentClear() {
+    setSelectedInstrument(null);
+    setPrice("");
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
-    // TODO: call createInvestment() server action from app/lib/actions/investments.ts
-    alert("Backend not connected yet — form is valid and ready to wire up.");
+    if (!selectedInstrument) return;
+
+    setError(null);
+    setSubmitting(true);
+
+    const result = await createInvestment({
+      tickerSymbol: selectedInstrument.symbol,
+      tradeType,
+      tradeDate,
+      quantity,
+      sharePrice: price,
+      fee,
+      broker,
+    });
+
+    // The action redirects on success
+    setSubmitting(false);
+    if (result?.error) setError(result.error);
   }
 
   return (
@@ -133,152 +110,11 @@ export default function AddInvestmentPage() {
             </div>
 
             <div className="p-4">
-              {selected ? (
-                /* Selected state */
-                <div
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg"
-                  style={{
-                    background: "var(--ph-accent-light)",
-                    border: "1px solid var(--ph-accent)",
-                  }}
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className="text-sm font-bold font-alt"
-                        style={{ color: "var(--ph-accent)" }}
-                      >
-                        {selected.symbol}
-                      </span>
-                      <TypeBadge type={selected.type} />
-                      <span
-                        className="text-xs font-alt"
-                        style={{ color: "var(--ph-text-subtle)" }}
-                      >
-                        {selected.exchange}
-                      </span>
-                    </div>
-                    <p
-                      className="text-xs font-alt mt-0.5 truncate"
-                      style={{ color: "var(--ph-text-muted)" }}
-                    >
-                      {selected.name}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={clearSelection}
-                    className="shrink-0 text-xs font-alt px-2 py-1 rounded transition-colors"
-                    style={{ color: "var(--ph-text-muted)" }}
-                    title="Change instrument"
-                  >
-                    Change
-                  </button>
-                </div>
-              ) : (
-                /* Search state */
-                <div className="relative" ref={searchRef}>
-                  <label className="ph-label">
-                    Search by ticker or company name
-                  </label>
-                  <div className="relative mt-1.5">
-                    <svg
-                      className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 pointer-events-none"
-                      style={{ color: "var(--ph-text-subtle)" }}
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
-                      />
-                    </svg>
-                    <input
-                      type="text"
-                      autoComplete="off"
-                      placeholder="e.g. AAPL, Apple, SPY, Bitcoin…"
-                      value={query}
-                      onChange={(e) => {
-                        setQuery(e.target.value);
-                        setDropdownOpen(true);
-                      }}
-                      onFocus={() => setDropdownOpen(true)}
-                      className="ph-input"
-                      style={{ paddingLeft: "2rem" }}
-                    />
-                  </div>
-
-                  {/* Dropdown results */}
-                  {dropdownOpen && query.trim() && (
-                    <div
-                      className="absolute z-50 w-full mt-1 rounded-lg overflow-hidden"
-                      style={{
-                        background: "var(--ph-surface)",
-                        border: "1px solid var(--ph-border)",
-                        boxShadow: "0 8px 24px rgba(0,0,0,0.10)",
-                      }}
-                    >
-                      {results.length > 0 ? (
-                        results.slice(0, 8).map((instrument, idx) => (
-                          <div
-                            key={`${instrument.symbol}-${instrument.exchange}`}
-                            onClick={() => selectInstrument(instrument)}
-                            onMouseEnter={() => setHoveredIdx(idx)}
-                            onMouseLeave={() => setHoveredIdx(null)}
-                            className="flex items-center gap-3 px-4 py-2.5 cursor-pointer"
-                            style={{
-                              background:
-                                hoveredIdx === idx
-                                  ? "var(--ph-accent-light)"
-                                  : "transparent",
-                              borderBottom:
-                                idx < results.length - 1
-                                  ? "1px solid var(--ph-border)"
-                                  : "none",
-                            }}
-                          >
-                            <span
-                              className="w-12 shrink-0 text-xs font-bold font-alt"
-                              style={{ color: "var(--ph-text)" }}
-                            >
-                              {instrument.symbol}
-                            </span>
-                            <span
-                              className="flex-1 text-xs font-alt truncate"
-                              style={{ color: "var(--ph-text-muted)" }}
-                            >
-                              {instrument.name}
-                            </span>
-                            <TypeBadge type={instrument.type} />
-                            <span
-                              className="shrink-0 text-xs font-alt"
-                              style={{ color: "var(--ph-text-subtle)" }}
-                            >
-                              {instrument.exchange}
-                            </span>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="px-4 py-5 text-center">
-                          <p
-                            className="text-xs font-alt"
-                            style={{ color: "var(--ph-text-muted)" }}
-                          >
-                            No instruments found for &ldquo;{query}&rdquo;
-                          </p>
-                          <p
-                            className="text-xs font-alt mt-1"
-                            style={{ color: "var(--ph-text-subtle)" }}
-                          ></p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
+              <InstrumentSearch
+                selectedInstrument={selectedInstrument}
+                onSelect={handleInstrumentSelect}
+                onClear={handleInstrumentClear}
+              />
             </div>
           </div>
 
@@ -469,16 +305,17 @@ export default function AddInvestmentPage() {
           </div>
 
           {/* ── Actions ── */}
+          {error && <div className="ph-error mb-2">{error}</div>}
           <div className="flex items-center justify-end gap-3 pt-1 pb-4">
             <Link href="/portfolio" className="ph-btn-ghost">
               Cancel
             </Link>
             <button
               type="submit"
-              disabled={!canSubmit}
+              disabled={!canSubmit || submitting}
               className="ph-btn-primary"
             >
-              Add Investment
+              {submitting ? "Adding..." : "Add Investment"}
             </button>
           </div>
         </form>
