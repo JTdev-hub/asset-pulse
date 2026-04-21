@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Instrument, searchInstruments } from "../lib/actions/instruments";
+import { searchInstruments } from "../lib/actions/instruments";
 import TypeBadge from "./TypeBadge";
 import SearchIcon from "./icons/SearchIcon";
+import { Instrument } from "../lib/data/instruments";
 
 interface InstrumentSearchProps {
   selectedInstrument: Instrument | null;
@@ -127,7 +128,7 @@ export default function InstrumentSearch({
           }}
         >
           {results.length > 0 ? (
-            results.slice(0, 8).map((instrument, idx) => (
+            results.map((instrument, idx) => (
               <div
                 key={`${instrument.symbol}-${instrument.exchange}`}
                 onClick={() => handleSelect(instrument)}

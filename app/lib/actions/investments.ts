@@ -9,6 +9,7 @@ import {
   CreateInvestmentSchema,
 } from "../schemas/investments";
 import { revalidatePath } from "next/cache";
+import { fetchMyInvestments } from "../data/investments";
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -17,10 +18,7 @@ import { revalidatePath } from "next/cache";
 export async function getMyInvestments() {
   const userId = await getUserId();
 
-  return prisma.investments.findMany({
-    where: { userId },
-    orderBy: { tradeDate: "desc" },
-  });
+  return await fetchMyInvestments(userId);
 }
 
 // ─── Mutations ────────────────────────────────────────────────────────────────

@@ -1,23 +1,19 @@
 "use client";
 
-import { useState, useRef, useEffect, SubmitEvent } from "react";
+import { useState, SubmitEvent } from "react";
 import Link from "next/link";
-import {
-  getInstrumentPrice,
-  Instrument,
-  InstrumentType,
-  searchInstruments,
-} from "@/app/lib/actions/instruments";
+import { getInstrumentPrice } from "@/app/lib/actions/instruments";
+import { Instrument } from "@/app/lib/data/instruments";
 import Breadcrumb from "@/app/components/Breadcrumb";
 import PageHeader from "@/app/components/PageHeader";
 import BuySellToggle from "@/app/components/BuySellToggle";
-import TypeBadge from "@/app/components/TypeBadge";
-import SearchIcon from "@/app/components/icons/SearchIcon";
 import { createInvestment } from "@/app/lib/actions/investments";
 import InstrumentSearch from "@/app/components/InstrumentSearch";
 
 // ── Mock instrument data ────────────────────────────────────────────────────
 // Replace with searchInstruments() server action when wiring up the backend.
+
+const TODAY = new Date().toISOString().split("T")[0];
 
 // ── Format helpers ──────────────────────────────────────────────────────────
 const usd = (n: number) =>
@@ -33,9 +29,7 @@ export default function AddInvestmentPage() {
     useState<Instrument | null>(null);
   // Trade fields
   const [tradeType, setTradeType] = useState<"BUY" | "SELL">("BUY");
-  const [tradeDate, setTradeDate] = useState(
-    new Date().toISOString().split("T")[0],
-  );
+  const [tradeDate, setTradeDate] = useState(TODAY);
   const [quantity, setQuantity] = useState("");
   const [price, setPrice] = useState("");
   const [fee, setFee] = useState("0");
@@ -139,7 +133,7 @@ export default function AddInvestmentPage() {
                 <input
                   type="date"
                   value={tradeDate}
-                  max={new Date().toISOString().split("T")[0]}
+                  max={TODAY}
                   onChange={(e) => setTradeDate(e.target.value)}
                   className="ph-input mt-1.5"
                   style={{ maxWidth: 180 }}

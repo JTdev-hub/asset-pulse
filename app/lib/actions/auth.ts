@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import { createClient } from "@/app/lib/supabase/server";
 import { LoginSchema, SignupSchema } from "@/app/lib/schemas/auth";
 import prisma from "@/app/lib/prisma";
