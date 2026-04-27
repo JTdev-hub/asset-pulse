@@ -9,18 +9,12 @@ import PageHeader from "@/app/components/PageHeader";
 import BuySellToggle from "@/app/components/BuySellToggle";
 import { createInvestment } from "@/app/lib/actions/investments";
 import InstrumentSearch from "@/app/components/InstrumentSearch";
+import { usd } from "@/app/lib/utils/format";
 
 // ── Mock instrument data ────────────────────────────────────────────────────
 // Replace with searchInstruments() server action when wiring up the backend.
 
 const TODAY = new Date().toISOString().split("T")[0];
-
-// ── Format helpers ──────────────────────────────────────────────────────────
-const usd = (n: number) =>
-  n.toLocaleString("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
 
 // ── Page ────────────────────────────────────────────────────────────────────
 export default function AddInvestmentPage() {

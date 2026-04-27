@@ -2,7 +2,6 @@
 
 import { redirect } from "next/navigation";
 import prisma from "@/app/lib/prisma";
-import { createClient } from "@/app/lib/supabase/server";
 import { getUserId } from "./auth";
 import {
   CreateInvestmentInput,

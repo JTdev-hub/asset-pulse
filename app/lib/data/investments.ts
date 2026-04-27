@@ -16,7 +16,7 @@ export async function fetchMyInvestments(
   userId: string,
 ): Promise<Investment[]> {
   "use cache";
-  cacheLife("hours");
+  cacheLife("seconds");
   cacheTag("investments");
 
   const investments = await prisma.investments.findMany({
